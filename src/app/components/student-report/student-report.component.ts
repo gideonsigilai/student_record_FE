@@ -66,15 +66,15 @@ import { StudentService, Student, PagedResponse } from '../../services/student.s
         
         <!-- Export Buttons -->
         <div class="flex gap-2">
-          <button class="btn-secondary flex items-center gap-2 text-sm" title="Export to Excel">
+          <button (click)="onExportExcel()" class="btn-secondary flex items-center gap-2 text-sm" title="Export to Excel">
             <lucide-icon name="file-spreadsheet" class="w-4 h-4 text-emerald-400"></lucide-icon>
             <span class="hidden sm:inline">Excel</span>
           </button>
-          <button class="btn-secondary flex items-center gap-2 text-sm" title="Export to CSV">
+          <button (click)="onExportCsv()" class="btn-secondary flex items-center gap-2 text-sm" title="Export to CSV">
             <lucide-icon name="file-text" class="w-4 h-4 text-blue-400"></lucide-icon>
             <span class="hidden sm:inline">CSV</span>
           </button>
-          <button class="btn-secondary flex items-center gap-2 text-sm" title="Export to PDF">
+          <button (click)="onExportPdf()" class="btn-secondary flex items-center gap-2 text-sm" title="Export to PDF">
             <lucide-icon name="file" class="w-4 h-4 text-red-400"></lucide-icon>
             <span class="hidden sm:inline">PDF</span>
           </button>
@@ -299,5 +299,38 @@ export class StudentReportComponent implements OnInit {
         if (score >= 70) return 'text-blue-400';
         if (score >= 50) return 'text-yellow-400';
         return 'text-red-400';
+    }
+
+    onExportPdf() {
+        this.studentService.exportPdf(this.selectedClass() || undefined).subscribe(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'students.pdf';
+            link.click();
+            window.URL.revokeObjectURL(url);
+        });
+    }
+
+    onExportExcel() {
+        this.studentService.exportExcel(this.selectedClass() || undefined).subscribe(blob => {
+             const url = window.URL.createObjectURL(blob);
+             const link = document.createElement('a');
+             link.href = url;
+             link.download = 'students.xlsx';
+             link.click();
+             window.URL.revokeObjectURL(url);
+        });
+    }
+
+    onExportCsv() {
+        this.studentService.exportCsv(this.selectedClass() || undefined).subscribe(blob => {
+             const url = window.URL.createObjectURL(blob);
+             const link = document.createElement('a');
+             link.href = url;
+             link.download = 'students.csv';
+             link.click();
+             window.URL.revokeObjectURL(url);
+        });
     }
 }

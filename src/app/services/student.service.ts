@@ -42,12 +42,14 @@ export interface PerformanceLog {
     timestamp: Date;
 }
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
     providedIn: 'root'
 })
 export class StudentService {
     private http = inject(HttpClient);
-    private baseUrl = 'http://localhost:8080/api/students';
+    private baseUrl = `${environment.apiUrl}/students`;
 
     // Performance tracking signals
     performanceLogs = signal<PerformanceLog[]>([]);
@@ -137,6 +139,30 @@ export class StudentService {
         return this.http.get<PagedResponse<Student>>(`${this.baseUrl}/report`, { params: httpParams }).pipe(
             catchError(this.handleError('Report loading'))
         );
+    }
+
+    exportPdf(studentClass?: string): Observable<Blob> {
+        let params = new HttpParams();
+        if (studentClass) {
+            params = params.set('class', studentClass);
+        }
+        return this.http.get(`${this.baseUrl}/export/pdf`, { params, responseType: 'blob' });
+    }
+
+    exportExcel(studentClass?: string): Observable<Blob> {
+        let params = new HttpParams();
+        if (studentClass) {
+            params = params.set('class', studentClass);
+        }
+        return this.http.get(`${this.baseUrl}/export/excel`, { params, responseType: 'blob' });
+    }
+
+    exportCsv(studentClass?: string): Observable<Blob> {
+        let params = new HttpParams();
+        if (studentClass) {
+            params = params.set('class', studentClass);
+        }
+        return this.http.get(`${this.baseUrl}/export/csv`, { params, responseType: 'blob' });
     }
 
     clearPerformanceLogs() {
